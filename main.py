@@ -2,8 +2,6 @@ import imageio
 import numpy as np
 import matplotlib.pyplot as plt
 
-# comentario
-
 # reader = imageio.get_reader('imageio:cockatoo.mp4')
 # for i, im in enumerate(reader):
 #     print('Mean of frame %i is %1.1f' % (i, im.mean()))
