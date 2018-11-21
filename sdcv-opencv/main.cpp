@@ -1,9 +1,9 @@
 /*
 * @file: main.cpp
 * @authors:
-* • Matlab firts release: M.C. Roxana Velazquez
-* • Matlab improvements: Dr. Jayro Santiago
-* • Opencv and improvements: Ing. Fernando Hermosillo
+* â€¢ Matlab firts release: M.C. Roxana Velazquez
+* â€¢ Matlab improvements: Dr. Jayro Santiago
+* â€¢ Opencv and improvements: Ing. Fernando Hermosillo
 *
 * @date: 28/11/2016
 * @history:
@@ -11,7 +11,7 @@
 * 12/08/2017: Adding SVMClassifier class
 * 20/08/2017: Adding VOI method in tracking
 *
-* @brief:	Sistema de Detección y Clasificacón Vehicular
+* @brief:	Sistema de DetecciÃ³n y ClasificacÃ³n Vehicular
 *			(SDCV) is a software that will be an 
 *			Intelligent Transport System solution.
 *
@@ -36,10 +36,10 @@
 #include <sstream>
 #include <iterator>
 #include <functional>
-#include <experimental/filesystem>
-#include <opencv2/opencv.hpp>
+#include <experimental\filesystem>
+#include <opencv2\opencv.hpp>
 #include <opencv2\plot.hpp>
-#include <sdcv/sdcv.h>
+#include <sdcv\sdcv.h>
 #include <opencv2\tracking.hpp>
 
 /*********************************************************/
@@ -67,75 +67,6 @@
 /*********************************************************/
 /*          P R O T O T Y P E   F U N C T I O N          */
 /*********************************************************/
-void svm_example(void) {
-	// Data for visual representation
-	int width = 512, height = 512;
-	cv::Mat image = cv::Mat::zeros(height, width, CV_8UC3);
-
-	// Set up training data
-	int labels[4] = { 1, -1, -1, -1 };			// Labels
-	cv::Mat labelsMat(4, 1, CV_32SC1, labels);
-	float trainingData[4][2] = { { 501, 10 },{ 255, 10 },{ 501, 255 },{ 10, 501 } };	// Training data
-	cv::Mat trainingDataMat(4, 2, CV_32FC1, trainingData);
-
-	// Set up SVM's parameters
-	cv::ml::SVM::Types svmtypes = cv::ml::SVM::C_SVC;
-	cv::ml::SVM::KernelTypes kernelType = cv::ml::SVM::LINEAR;
-
-	cv::Ptr<cv::ml::SVM> svm = cv::ml::SVM::create();		// Create an object of SVM
-	svm->setType(svmtypes);									// Set SVM Type (in this case OCSVM)
-	svm->setKernel(kernelType);								// Set SVM Kernel type
-															//svm->setC(5.00);										// Set the SVM C parameter
-															//svm->setGamma(.000020);								// Set SVM gamma parameter
-															//svm->setNu(0.025);									// Set the SVM Nu parameter
-	svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER, 100, 1e-6));	// Set the termination criterium
-
-																					// Train the SVM
-																					// Train Model sampling by rows (samples, sample_type, labels)
-	svm->train(trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat);
-
-	// Show the decision regions given by the SVM
-	cv::Vec3b green(0, 255, 0), blue(255, 0, 0);	// define colors
-	for (int i = 0; i < image.rows; ++i)
-		for (int j = 0; j < image.cols; ++j)
-		{
-			// The sample
-			cv::Mat sampleMat = (cv::Mat_<float>(1, 2) << j, i);
-
-			// Prediction by SVM
-			float response = svm->predict(sampleMat);
-
-			if (response == 1)
-				image.at<cv::Vec3b>(i, j) = green;
-			else if (response == -1)
-				image.at<cv::Vec3b>(i, j) = blue;
-		}
-
-	// Show the training data
-	int thickness = -1;
-	int lineType = 8;
-	cv::circle(image, cv::Point(501, 10), 5, cv::Scalar(0, 255, 255), thickness, lineType);
-	cv::circle(image, cv::Point(255, 10), 5, cv::Scalar(0, 0, 255), thickness, lineType);
-	cv::circle(image, cv::Point(501, 255), 5, cv::Scalar(0, 0, 255), thickness, lineType);
-	cv::circle(image, cv::Point(10, 501), 5, cv::Scalar(0, 0, 255), thickness, lineType);
-
-	// Show support vectors
-	thickness = 2;
-	lineType = 8;
-	cv::Mat sv = svm->getSupportVectors();
-	std::cout << "SV Count: " << sv.rows << std::endl;
-	std::cout << "SV[1] = " << sv.row(0) << std::endl;
-	for (int i = 0; i < sv.rows; ++i)
-	{
-		const float* v = sv.ptr<float>(i);
-		cv::circle(image, cv::Point((int)v[0], (int)v[1]), 3, cv::Scalar(255, 255, 0), thickness, lineType);
-	}
-
-	cv::imwrite("result.png", image);        // save the image*/
-
-	cv::imshow("SVM Simple Example", image); // show it to the user
-	cv::waitKey(0);
-}
 
 /**********************************************************/
 /*            G L O B A L    V A R I A B L E S            */
@@ -245,10 +176,10 @@ int main(int argc, const char** argv)
 	// 1.3. Vertice derecho superior
 	// 1.4. Vertice izquierdo superior
 	// 1.5. Vertice izquierdo inferior
-	// 2. Lineas de división
+	// 2. Lineas de divisiÃ³n
 	// 3. Linea de deteccion
 	// 4. Linea de fin de ROI
-	// 5. Lineas de classificación en el orden:
+	// 5. Lineas de classificaciÃ³n en el orden:
 	// 5.1 Linea superior
 	// 5.2 Linea inferior
 	// Add a Height/10 extra space for display current ROI definition name {vertex, line detection, ...}
@@ -266,7 +197,8 @@ int main(int argc, const char** argv)
 
 	// TRACKER ----------------------------------------------------------------------------------------
 	sdcv::Tracker tracker(8, 12, fps, roi, &classifier);
-
+	
+	// Output files
 	std::ofstream file(projdir + "statistics.csv");
 	file << "Frame,idAlg,ID,DetectedCentroidX,DetectedCentroidY,EstimatedCentroidX,EstimatedCentroidY,Area,Width,Heigth,Velocity,RelAreaWH,RegionID,Occlusion,ObjId" << std::endl;
 	std::ofstream fileRT(projdir + "time.txt");
