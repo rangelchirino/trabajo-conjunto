@@ -22,10 +22,18 @@
 #include <fstream>
 
 
-std::ofstream outfile("tracking.txt");
-#define out std::cout
+//std::ofstream outfile("tracking.txt");
+//#define out std::cout
+
+
+// Traffic control flow direction selection
 static sdcv::eOrientationLine trafficOrientation = sdcv::eOrientationLine::TOP_DOWN;
+
+
+// For debug
 int detected_id = 14;
+
+
 namespace sdcv {
 	/*-------------------------------------*/
 	/*		Private Prototype Function		*/
@@ -119,14 +127,13 @@ namespace sdcv {
 
 
 	void Tracker::writeTracks(std::ofstream &file) {
-		for (auto it = tracks.begin(); it != tracks.end(); it++) {
-			file << FrameCountDebug << "," << 0 << "," << *it << std::endl;
-		}
+		for (auto track : tracks)
+			file << FrameCountDebug << "," << 0 << "," << track << std::endl;
 	}
+
 	void Tracker::writeTracks(void) {
-		for (auto it = tracks.begin(); it != tracks.end(); it++) {
-			std::cout << FrameCountDebug << "," << 0 << "," << *it << std::endl;
-		}
+		for (auto track : tracks)
+			std::cout << FrameCountDebug << "," << 0 << "," << track << std::endl;
 	}
 
 
@@ -180,6 +187,7 @@ namespace sdcv {
 			}
 
 			init = true;
+
 
 			#ifdef SDCV_TRACKING_DEBUG
 			FrameCountDebug++;
@@ -295,8 +303,6 @@ namespace sdcv {
 		// Add new tracks
 		for(std::vector<int>::iterator it = unassignedDetections.begin(); it != unassignedDetections.end(); ++it) {
 			///tracks.push_back( sdcv::Track(detectedBlobs.at(*it)) );
-
-
 			// Add this flag #######################################################
 			/// matchedTrack->isFP = 0;
 			// #####################################################################
