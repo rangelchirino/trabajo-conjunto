@@ -1,27 +1,10 @@
 /**
-* DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-* Version 2, December 2004
-*
-* Copyright (C) 2017 Fernando Hermosillo <fhermosillo@gdl.cinvestav.mx>
-*
-* Everyone is permitted to copy and distribute verbatim or modified
-* copies of this license document, and changing it is allowed as long
-* as the name is changed.
-*
-* DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-* TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-*
-* 0. You just DO WHAT THE FUCK YOU WANT TO.
-*/
-
-
-/**
 * \file \sdcv_files.hpp
 * \author \Fernando Hermosillo
 * \date \12/07/2017 09:00
 *
-* \brief This file define the SVM Classifier class and is part of
-*		 Vehicle Detection and Classification System project
+* \brief This file ... and is part of the Vehicle Detection and 
+* 	 Classification System project
 *
 * \version Revision: 1.2
 *
