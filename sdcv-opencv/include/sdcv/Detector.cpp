@@ -171,7 +171,7 @@ namespace sdcv {
 		// Remove shadows
 		if (ShadowEn) {
 			cv::imshow("Shadows", foreground);
-			cv::threshold(foreground, foreground, 128, 255, CV_THRESH_BINARY);
+			cv::threshold(foreground, foreground, 128, 255, cv::THRESH_BINARY);
 		}
 		
 		
@@ -260,7 +260,7 @@ namespace sdcv {
 		mask.copyTo( maskTmp );
 		
 		/* Analisis de componentes conectados */
-		cv::findContours(maskTmp, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+		cv::findContours(maskTmp, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
 		
 		cv::Mat ForegroundMask = cv::Mat::zeros(maskTmp.size(), CV_8UC1);
 
@@ -268,7 +268,7 @@ namespace sdcv {
 		{
 			int Area = (int)cv::contourArea( contours[i] );
 			if ( Area > MinimumBlobArea ) {
-				cv::drawContours(ForegroundMask, contours, (int)i, CV_RGB(255, 255, 255), CV_FILLED);
+				cv::drawContours(ForegroundMask, contours, (int)i, CV_RGB(255, 255, 255), cv::FILLED);
 				this->blobs.push_back(sdcv::Blob(contours[i], (int)i, Area));
 			}
 		}

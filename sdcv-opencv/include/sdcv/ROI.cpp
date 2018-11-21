@@ -60,7 +60,7 @@ namespace sdcv {
 	// Set methods
 	void ROI::setName(cv::String name) { this->name = name; }
 	void ROI::setVertices(cv::Mat frame) {
-		cv::namedWindow("ROI2", CV_WINDOW_KEEPRATIO);
+		cv::namedWindow("ROI2", cv::WINDOW_KEEPRATIO);
 		cv::imshow("ROI2", frame);
 
 		cv::Mat roimask;
@@ -75,7 +75,7 @@ namespace sdcv {
 
 		std::vector< std::vector<cv::Point> > contours;
 		this->mask.copyTo(roimask);
-		cv::findContours(roimask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+		cv::findContours(roimask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
 		CV_Assert(contours.size() == 1);
 
@@ -92,7 +92,7 @@ namespace sdcv {
 	}
 
 	void ROI::setDetectionLine(cv::Mat frame) {
-		cv::namedWindow("ROI2", CV_WINDOW_KEEPRATIO);
+		cv::namedWindow("ROI2", cv::WINDOW_KEEPRATIO);
 		cv::imshow("ROI2", frame);
 
 		this->lineDetection = imLine(frame, "ROI2", cv::Point(-1, -1));
@@ -115,7 +115,7 @@ namespace sdcv {
 	}
 
 	void ROI::setEndingLine(cv::Mat frame) {
-		cv::namedWindow("ROI2", CV_WINDOW_KEEPRATIO);
+		cv::namedWindow("ROI2", cv::WINDOW_KEEPRATIO);
 		cv::imshow("ROI2", frame);
 
 		EndLine = imLine(frame, "ROI2");
@@ -134,7 +134,7 @@ namespace sdcv {
 	}
 
 	void ROI::setRegions(cv::Mat frame, int NbRegions, cv::Point vertexIdx) {
-		cv::namedWindow("ROI2", CV_WINDOW_KEEPRATIO);
+		cv::namedWindow("ROI2", cv::WINDOW_KEEPRATIO);
 		cv::imshow("ROI2", frame);
 
 		CV_Assert(NbRegions >= 0);
@@ -170,7 +170,7 @@ namespace sdcv {
 		CV_Assert(video.isOpened());
 		video.read(frame);
 		video.release();
-		cv::namedWindow("ROI2", CV_WINDOW_KEEPRATIO);
+		cv::namedWindow("ROI2", cv::WINDOW_KEEPRATIO);
 		cv::imshow("ROI2", frame);
 
 		// Setting ROI coordinates
@@ -223,9 +223,9 @@ namespace sdcv {
 		std::cout << "lanePosition = " << std::endl;
 		std::cout << this->lineLane << std::endl;
 		std::cout << "m_lineLanes = " << std::endl;
-		std::cout << cv::format(this->m_lineLanes, 0) << std::endl;
+		std::cout << cv::format(this->m_lineLanes, cv::Formatter::FMT_DEFAULT) << std::endl;
 		std::cout << "b_lineLanes = " << std::endl;
-		std::cout << cv::format(this->b_lineLanes, 0) << std::endl;
+		std::cout << cv::format(this->b_lineLanes, cv::Formatter::FMT_DEFAULT) << std::endl;
 
 		/* Setting line detection */
 		std::vector<cv::Point> linePts = imLine(frame, "ROI2", cv::Point(-1, -1));
@@ -390,7 +390,7 @@ namespace sdcv {
 			std::cout << "Vertices" << std::endl;
 
 			vertices2polygon(input, frame.size(), aux);
-			cv::findContours(aux, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+			cv::findContours(aux, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 			cv::approxPolyDP(contours[0], approxPolygon, 1.0, true); // Ramer-Douglas-Peucker algorithm
 
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
@@ -502,7 +502,7 @@ namespace sdcv {
 		std::vector< std::vector<cv::Point> > contours;
 		cv::Mat RoiMask;
 		this->mask.copyTo(RoiMask);
-		cv::findContours(RoiMask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+		cv::findContours(RoiMask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
 		CV_Assert(contours.size() == 1);
 
@@ -515,7 +515,7 @@ namespace sdcv {
 		cv::Mat img, imgtmp;
 		frame.copyTo(img);
 		frameTmp.copyTo(imgtmp, this->mask);
-		cv::drawContours(imgtmp, contours, 0, cv::Scalar(0, 255, 0), CV_FILLED);
+		cv::drawContours(imgtmp, contours, 0, cv::Scalar(0, 255, 0), cv::FILLED);
 		cv::addWeighted(imgtmp, 0.1, img, 1, 0, img, -1);
 		cv::imshow("ROI2", img);
 

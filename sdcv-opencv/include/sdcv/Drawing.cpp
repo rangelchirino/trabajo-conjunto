@@ -18,7 +18,7 @@ namespace sdcv {
 	cv::Point imPoint(cv::InputArray frame, cv::String WindowName) {
 		cv::Point pt = cv::Point(-1, -1);
 		
-		cv::namedWindow(WindowName, CV_WINDOW_KEEPRATIO);
+		cv::namedWindow(WindowName, cv::WINDOW_KEEPRATIO);
 		cv::imshow(WindowName, frame.getMat());
 
 		cv::setMouseCallback(WindowName, pointOnMouseCallback, &pt);
@@ -175,7 +175,7 @@ namespace sdcv {
 
 
 	void plot2d(std::string name, cv::Size Axes, std::vector<int> xData, std::vector<int> yData) {
-		cv::namedWindow(name, CV_WINDOW_KEEPRATIO);
+		cv::namedWindow(name, cv::WINDOW_KEEPRATIO);
 		
 		cv::Mat graph = cv::Mat::zeros(Axes, CV_8UC3);
 
@@ -221,7 +221,7 @@ namespace sdcv {
 		cv::Mat img = frame.getMat();
 		poly.clear();
 
-		cv::namedWindow("ROI TOOL", CV_WINDOW_KEEPRATIO);
+		cv::namedWindow("ROI TOOL", cv::WINDOW_KEEPRATIO);
 		
 		// Get ROI vertices
 		while (true) {

@@ -3,8 +3,8 @@
 * \author \Fernando Hermosillo
 * \date \12/07/2017 09:00
 *
-* \brief This file ... and is part of the Vehicle Detection and 
-* 	 Classification System project
+* \brief This file define the SVM Classifier class and is part of
+*		 Vehicle Detection and Classification System project
 *
 * \version Revision: 1.2
 *

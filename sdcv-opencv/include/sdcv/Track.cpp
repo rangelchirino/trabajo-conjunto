@@ -92,18 +92,18 @@ namespace sdcv {
 
 	void Track::print( std::ofstream &file  ) {
 		file << "----------------------- [Track Info] -----------------------:"	<< std::endl;
-		file << "- Bounding box: "				<< cv::format(bbox, 0) << std::endl;
-		file << "- Detected Centroids: \n"		<< cv::format(detectedCentroid,0) << std::endl;
+		file << "- Bounding box: "				<< cv::format(bbox, cv::Formatter::FMT_DEFAULT) << std::endl;
+		file << "- Detected Centroids: \n"		<< cv::format(detectedCentroid, cv::Formatter::FMT_DEFAULT) << std::endl;
 		file << "- Predicted Centroids: "		<< predictedCentroid << std::endl;
-		file << "- Estimated Centroids: \n"		<< cv::format(estimatedCentroid,0) << std::endl;
+		file << "- Estimated Centroids: \n"		<< cv::format(estimatedCentroid, cv::Formatter::FMT_DEFAULT) << std::endl;
 		file << "- Kalman Filter: \n"			<< std::endl;
 		file << "-- X_hat:\n"					<< AKF.statePost << std::endl;
 		file << "-- P:\n"						<< AKF.errorCovPost << std::endl;
 		file << "-- K:\n"						<< AKF.gain << std::endl;
 		file << "-- R:\n"						<< AKF.measurementNoiseCov << std::endl;
 		file << "-- Q:\n"						<< AKF.processNoiseCov << std::endl;
-		file << "- Areas: "						<< cv::format(areas,0) << std::endl;
-		file << "- Normalized Area: "			<< cv::format(normAreas,0) << std::endl;
+		file << "- Areas: "						<< cv::format(areas, cv::Formatter::FMT_DEFAULT) << std::endl;
+		file << "- Normalized Area: "			<< cv::format(normAreas, cv::Formatter::FMT_DEFAULT) << std::endl;
 		file << "- Estimated Area"				<< estimatedArea << std::endl;
 		file << "- Velocity: "					<< velocity << std::endl;
 		file << "- Total Frames: "				<< totalFrames << std::endl;
