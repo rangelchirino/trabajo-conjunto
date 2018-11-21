@@ -3,7 +3,7 @@
 * @authors:
 * • Matlab firts release: M.C. Roxana Velazquez
 * • Matlab improvements: Dr. Jayro Santiago
-* • Opencv and improvements: Ing. Fernando Hermosillo
+* • Opencv and improvements: M.C. Fernando Hermosillo
 *
 * @date: 28/11/2016
 * @history:
@@ -196,11 +196,11 @@ int main(int argc, const char** argv)
 	// TRACKER ----------------------------------------------------------------------------------------
 	sdcv::Tracker tracker(8, 12, fps, roi, &classifier);
 
-	std::ofstream file(projdir + "statistics.csv");
-	file << "Frame,idAlg,ID,DetectedCentroidX,DetectedCentroidY,EstimatedCentroidX,EstimatedCentroidY,Area,Width,Heigth,Velocity,RelAreaWH,RegionID,Occlusion,ObjId" << std::endl;
-	std::ofstream fileRT(projdir + "time.txt");
-	fileRT << "Total,Detection,Tracking,Drawing" << std::endl;
-	fileRT << 1.0 / fps << std::endl;
+	std::ofstream stafile(projdir + "statistics.csv");
+	stafile << "Frame,idAlg,ID,DetectedCentroidX,DetectedCentroidY,EstimatedCentroidX,EstimatedCentroidY,Area,Width,Heigth,Velocity,RelAreaWH,RegionID,Occlusion,ObjId" << std::endl;
+	std::ofstream timefile(projdir + "time.csv");
+	timefile << "Total,Detection,Tracking,Drawing" << std::endl;
+	timefile << 1.0 / fps << std::endl;
 
 
 	// Video Writer --------------------------------------
@@ -258,9 +258,12 @@ int main(int argc, const char** argv)
 			Tdrawing = t;
 
 			time_per_frame += t;
+
+			// Write tracking results in a file
+			tracker.writeTracks(stafile);
 		}
 		// Measure time
-		fileRT << time_per_frame << "," << Tdetect << "," << Ttracking << "," << Tdrawing << std::endl;
+		timefile << time_per_frame << "," << Tdetect << "," << Ttracking << "," << Tdrawing << std::endl;
 
 		//cv::imshow("DETECTIONS", detections);
 		cv::imshow("Track", frameTracking);
