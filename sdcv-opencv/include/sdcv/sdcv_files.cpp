@@ -118,17 +118,25 @@ namespace sdcv {
 	
 	std::tuple<std::string, std::string, std::string> fs_fileparts(std::string filename) {
 		std::string path, name, ext;
-
+		
 		size_t slash = filename.find_last_of('/');
 		size_t dot = filename.find_last_of('.');
 
 		bool f1 = slash < filename.length();
 		bool f2 = dot < filename.length();
 
+		// Try with '\'
+		if (!f1) {
+			slash = filename.find_last_of('\\');
+			f1 = slash < filename.length();
+		}
+		
+
 		if (f1 && f2) {
 			path = filename.substr(0, slash + 1);
 			name = filename.substr(slash + 1, dot - slash - 1);
 			ext = filename.substr(dot);
+			
 		} else if (f1 && !f2) {
 			path = filename.substr(0, slash + 1);
 			name = filename.substr(slash + 1);

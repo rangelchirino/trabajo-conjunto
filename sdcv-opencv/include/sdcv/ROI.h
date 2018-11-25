@@ -8,6 +8,8 @@
  *	25/11/2016: Initial version.
  *  26/11/2016:
  *  05/07/2017:	Added NbRegions and the vector of lines for the regions.
+ *	23/11/2018: Added a region of interest to set lines and ROI, also display 
+ *				the current line to setup
  */
 
 #ifndef ROI_HPP
@@ -40,13 +42,7 @@ namespace sdcv {
 		std::vector< double > m_lineLanes; 	// slope for each lane's division line
 		std::vector< double > b_lineLanes; 	// intersection for each lane's division line
 		std::vector< cv::Mat > DL_mask;
-	}DivLaneLine_t;
-
-	typedef enum {
-		ROI_TEST_VERTEX = 0,
-		ROI_TEST_DIV_LINES,
-		ROI_TEST_LINE_DETECTION
-	}eROItest;
+	} DivLaneLine_t;
 
 	/*!
 	 * @class 	ROI.
@@ -94,12 +90,12 @@ namespace sdcv {
 	public:
 		// Constructor
 		ROI();
-		ROI( cv::String name );
+		ROI(cv::String name);
 
 		// Get methods
-		cv::Rect getBbox( void );
-		std::vector<cv::Point> getVertices( void );
-		cv::Mat getMask( void );
+		cv::Rect getBbox(void);
+		std::vector<cv::Point> getVertices(void);
+		cv::Mat getMask(void);
 		int getArea(void);
 
 		DivLaneLine_t getLaneData( void );
@@ -129,12 +125,9 @@ namespace sdcv {
 		void setRegions(cv::Mat frame, int NbRegions, cv::Point vertexIdx);
 
 		// Action methods
-		void create(cv::String videonamePath, int NbDivLines = 4, int NbRegions = 0, bool bLoad = false);
+		void setup(cv::String videonamePath, int NbDivLines = 4, int NbRegions = 0, bool bLoad = false);
 		void apply(cv::InputArray frame, cv::OutputArray image);
 		void draw(cv::Mat &frame, bool roi = true, bool lineDetection = true, bool endLine = false, bool bDrawRegions = false);
-
-		// Testing methods
-		void testing(eROItest en2Test, cv::Mat frame, std::vector<cv::Point> input);
 
 		// Destructor
 		~ROI();

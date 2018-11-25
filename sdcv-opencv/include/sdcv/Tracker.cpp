@@ -25,7 +25,6 @@
 //std::ofstream outfile("tracking.txt");
 //#define out std::cout
 
-
 // Traffic control flow direction selection
 static sdcv::eOrientationLine trafficOrientation = sdcv::eOrientationLine::TOP_DOWN;
 

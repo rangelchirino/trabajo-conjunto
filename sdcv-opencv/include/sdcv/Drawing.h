@@ -9,6 +9,7 @@
  * 26/11/2016: Initial version.
  * 10/12/2016: Added ItoS function.
  * 05/07/2017: Added imRegion function and the function imLine has been change its struct (drawing the current line to be gotten).
+ * 23/11/2018: Added a region of interest to set lines and polygons
  */
 
 #ifndef DRAWING_HPP
@@ -45,24 +46,40 @@ namespace sdcv {
 	 * @brief	This function returns a set of points for a line that you will set in an image.
 	 * @param	frame (Input) - Frame where line is gonna be gotten.
 	 * @param	WindowName (Input) - A string that contains the name of the window in case of line is gonna be dram
-	 * @param	initialConditions (Input) - 
+	 * @param	Cinit (Input) - Initial Conditions
+	 * @param	roi (Input) - A region of interest where a line can be choosen
 	 *
 	 * @return 	A set of points
 	 */
-	std::vector<cv::Point> imLine(cv::OutputArray frame, cv::String WindowName = "IMLINE", cv::Point initialConditions = cv::Point(-1, -1));
-	cv::Point imPoint(cv::InputArray frame, cv::String WindowName = "IMPOINT");
-	
+	std::vector<cv::Point> imLine(cv::OutputArray frame, cv::String WindowName = "IMLINE", cv::Point Cinit = cv::Point(-1, -1), cv::Rect roi = cv::Rect());
+
 	/*!
-	* @name	imLine.
+	* @name	imPoint.
 	* @version	1.0
 	* @brief	This function returns a set of points for a line that you will set in an image.
 	* @param	frame (Input) - Frame where line is gonna be gotten.
 	* @param	WindowName (Input) - A string that contains the name of the window in case of line is gonna be dram
-	* @param	initialConditions (Input) -
+	*
+	* @return 	A point
+	*/
+	cv::Point imPoint(cv::InputArray frame, cv::String WindowName = "IMPOINT");
+	
+	/*!
+	* @name		imRegions.
+	* @version	1.3
+	* @brief	This function returns a set of points for a line that you will set 
+	*			in an image.
+	* @param	frame (Input) - Frame where line is gonna be taken
+	* @param	wname (Input) - A string containing the name of the window
+	* @param	NbRegions (Input) - Number of regions
+	* @param	roi (Input) - A region of interest where the regions can be choosen
 	*
 	* @return 	A set of points
 	*/
-	std::vector< std::vector<cv::Point> > imRegions(cv::OutputArray frame, int NbRegions = 2, cv::String WindowName = "RegionWindow", cv::Point initialConditions = cv::Point(-1, -1));
+	std::vector< std::vector<cv::Point> > imRegions(cv::OutputArray frame, 
+													cv::String wname = "RegionWindow", 
+													int NbRegions = 2, 
+													cv::Rect roi = cv::Rect());
 
 	/*!
 	 * @name	vertices2polygon.
@@ -123,7 +140,6 @@ namespace sdcv {
 	* @param	shape		Annotation shape {rectangular, circular}
 	* @param	color		Annotation color
 	*
-	* CAUTION! WORK IN PROGRESS
 	*/
 	void insertObjectAnnotation(cv::InputOutputArray I, cv::Rect position, std::string label, eAnnotationShape shape = E_SHAPE_RECT, cv::Scalar color = CV_RGB(255,255,0));
 

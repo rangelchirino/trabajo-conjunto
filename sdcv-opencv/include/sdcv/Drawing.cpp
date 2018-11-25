@@ -2,7 +2,7 @@
 
 
 namespace sdcv {
-	typedef std::tuple<std::vector<cv::Point>, cv::Mat, std::string> lineOnMouseData_t;
+	typedef std::tuple<std::vector<cv::Point>, cv::Mat, std::string, cv::Rect> lineOnMouseData_t;
 	static void lineOnMouseCallback(int event, int X, int Y, int flags, void* pvUserDat);
 	static void pointOnMouseCallback(int event, int X, int Y, int flags, void* pvUserDat);
 	
@@ -41,27 +41,33 @@ namespace sdcv {
 		return pt;
 	}
 
-	std::vector<cv::Point> imLine(cv::OutputArray frame, cv::String WindowName, cv::Point initialConditions) {
-			std::vector<cv::Point> linePoints;
-			cv::Mat frameTmp;
-			frame.copyTo(frameTmp);
+	std::vector<cv::Point> imLine(cv::OutputArray frame, cv::String WindowName, cv::Point Cinit, cv::Rect roi) {
+			std::vector<cv::Point> lpt;
+			cv::Mat tmp;
+			frame.copyTo(tmp);
 
 			// Initial conditions
-			if (initialConditions.x >= 0 || initialConditions.y >= 0) {
-				linePoints.push_back(initialConditions);
-			}
-			std::cout << "Initial Conditions: " << initialConditions << std::endl;
-			cv::imshow(WindowName, frameTmp);
+			if (Cinit.x >= 0 || Cinit.y >= 0) 
+				lpt.push_back(Cinit);
+			std::cout << "Initial Conditions: " << Cinit << std::endl;
+
+			// Region of interest
+			if (!roi.width || !roi.height)
+				roi = cv::Rect(0, 0, frame.size().width, frame.size().height);
+			std::cout << "Roi: " << roi << std::endl;
+			
+			cv::imshow(WindowName, tmp);
 
 			// Set mouse callback
-			lineOnMouseData_t onMouseTuple(linePoints, frameTmp, WindowName);
+			lineOnMouseData_t onMouseTuple(lpt, tmp, WindowName, roi);
 			cv::setMouseCallback(WindowName, lineOnMouseCallback, &onMouseTuple);
 			
 			// Wait until line be setted or window is finished
-			while (cv::getWindowProperty(WindowName, 0) >= 0 && std::get<0>(onMouseTuple).size() < 2)
-				if( cv::waitKey(30) == sdcv::VK_ESC ) 
+			while (cv::getWindowProperty(WindowName, 0) >= 0 && std::get<0>(onMouseTuple).size() < 2) {
+				if (cv::waitKey(30) == sdcv::VK_ESC)
 					std::get<0>(onMouseTuple).clear();
-			
+			}
+
 			// Test if window has been closed
 			if (cv::getWindowProperty(WindowName, 0) < 0) {
 				std::cerr << "Window [" << WindowName << "] has been closed!" << std::endl;
@@ -73,10 +79,14 @@ namespace sdcv {
 			// Unset mouse callback
 			cv::setMouseCallback(WindowName, NULL, NULL);
 
-			return(std::get<0>(onMouseTuple));
+			return std::get<0>(onMouseTuple);
 	}
 	
-	std::vector< std::vector<cv::Point> > imRegions(cv::OutputArray frame, int NbRegions, cv::String WindowName, cv::Point initialConditions) {
+	std::vector< std::vector<cv::Point> > imRegions(cv::OutputArray frame,
+													cv::String wname,
+													int NbRegions,
+													cv::Rect roi) 
+	{
 		cv::Mat frameTmp;
 		std::vector< std::vector<cv::Point> > Regions;
 		int idx = 0;
@@ -84,9 +94,9 @@ namespace sdcv {
 		frame.copyTo(frameTmp);
 
 		while (NbRegions--) {
-			Regions.push_back( imLine(frameTmp, WindowName) );
+			Regions.push_back( sdcv::imLine(frameTmp, wname, cv::Point(-1,-1), roi) );
 			cv::line(frameTmp, Regions.at(idx).front(), Regions.at(idx).back(), CV_RGB(255, 0, 255), 2);
-			cv::imshow("ROI2", frameTmp);
+			cv::imshow(wname, frameTmp);
 			idx++;
 		}
 		
@@ -135,23 +145,26 @@ namespace sdcv {
 	}
 
 	static void lineOnMouseCallback(int event, int X, int Y, int flags, void* pvUserDat) {
-		//std::vector<cv::Point> *linePoints = (std::vector<cv::Point> *)pvUserDat;
 		lineOnMouseData_t *onMouseTuple = (lineOnMouseData_t *)pvUserDat;
 		std::string WinName = std::get<2>(*onMouseTuple);
+		cv::Rect r = std::get<3>(*onMouseTuple);
+		
 
 		if( std::get<0>(*onMouseTuple).size() ) {
 			cv::Point pt = std::get<0>(*onMouseTuple).front();
 			cv::Mat img;
-			std::get<1>(*onMouseTuple).copyTo(img);
-			cv::line(img, pt, cv::Point(X, Y), CV_RGB(0, 0, 255), 2);
-			cv::circle(img, pt, 4, CV_RGB(0, 0, 0));
-			cv::imshow(WinName, img);
-			cv::waitKey(30);
+			
+			if (r.contains(cv::Point(X, Y))) {
+				std::get<1>(*onMouseTuple).copyTo(img);
+				cv::line(img, pt, cv::Point(X, Y), CV_RGB(0, 0, 255), 2);
+				cv::circle(img, pt, 4, CV_RGB(0, 0, 0));
+				cv::imshow(WinName, img);
+				cv::waitKey(30);
+			}
 		}
 
-		if (event == cv::EVENT_LBUTTONDOWN) {
+		if (event == cv::EVENT_LBUTTONDOWN && r.contains(cv::Point(X,Y)) )
 			std::get<0>(*onMouseTuple).push_back(cv::Point(X, Y));
-		}
 			
 	}
 
