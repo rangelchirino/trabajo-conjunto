@@ -36,9 +36,17 @@
 #include <sstream>
 #include <iterator>
 #include <functional>
+#include <deque>
 #include <experimental/filesystem>
 #include <opencv2/opencv.hpp>
 #include <sdcv/sdcv.h>
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <Windows.h>
+
+#elif defined(_UNIX)
+
+#endif
 
 /*********************************************************/
 /*                     D E F I N E S                     */
@@ -65,6 +73,46 @@
 /*********************************************************/
 /*          P R O T O T Y P E   F U N C T I O N          */
 /*********************************************************/
+#if defined(_WIN32) || defined(_WIN64)
+std::string uigetfile(wchar_t filter[] = L"All files\0*.*\0", HWND hWnd = NULL) {
+	std::string filepath;
+
+	// OPENFILENAME struct initialization
+	TCHAR fbuffer[200];
+	OPENFILENAME ofn;
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFile = fbuffer;
+	fbuffer[0] = L'\0';
+	ofn.nMaxFile = sizeof(fbuffer);
+	ofn.lpstrFilter = filter;
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+	if (GetOpenFileName(&ofn) == TRUE) {
+		int i = 0;
+		while (fbuffer[i] != L'\0') {
+			filepath += (char)fbuffer[i++];
+		}
+	}
+	else {
+		std::cout << "\"filediag\" function error" << std::endl;
+		exit(-1);
+	}
+
+	return filepath;
+}
+
+#elif defined(_UNIX)
+std::string uigetfile(const wchar_t filter) {
+
+}
+
+#endif
 
 /**********************************************************/
 /*            G L O B A L    V A R I A B L E S            */
@@ -75,7 +123,6 @@
 /*********************************************************/
 int main(int argc, const char** argv)
 {
-
 	//////////////////////////////////////////////
 	//     _____   _____     _____  __      __	//
 	//    / ____| |  __ \   / ____| \ \    / /	//
@@ -85,11 +132,11 @@ int main(int argc, const char** argv)
 	//   |_____/  |_____/   \_____|     \/		//
 	//////////////////////////////////////////////
 	int key = 0, NbFrame = 0;
-	//cv::String videoname = "V16-2016-09-20-1321"; int NumDivLines = 4;
+	//cv::String videoname = "V16-2016-09-20-1321"; int nDL = 4;
 	///cv::String videoname = "V00";
-	cv::String videoname = "V01-2016-07-10"; int NumDivLines = 4;
+	//cv::String videoname = "V01-2016-07-10"; int nDL = 4;
 	//cv::String videoname = "V18-2016-10-05-1340";
-	//cv::String videoname = "V06-2016-06-15-1838";	int NumDivLines = 4;
+	//cv::String videoname = "V06-2016-06-15-1838";	int nDL = 4;
 	//cv::String videoname = "V07-2016-07-15-1840";
 	//cv::String videoname = "video720";
 	//cv::String videoname = "20161005_134318";
@@ -97,55 +144,66 @@ int main(int argc, const char** argv)
 	//cv::String videoname = "V07-2016-07-15-1840";
 	///std::string videoname = "V18-2016-10-05-1340-420x240-25fv18";
 
-	//std::string videoname = "V25-2016-11-10-420x240-25";	int NumDivLines = 5;
-	///std::string videoname = "V4";	int NumDivLines = 5; // 5 lines
-	///std::string videoname = "V6";	int NumDivLines = 4; // 4 lines
-	///std::string videoname = "V30";	int NumDivLines = 4; // 4 lines
-	///std::string videoname = "V31";	int NumDivLines = 4; // 4 lines
-	///std::string videoname = "V32";	int NumDivLines = 6; // 6 lines
-	//std::string videoname = "V33";	int NumDivLines = 2; // 2
-	//std::string videoname = "V34";	int NumDivLines = 3; // 3
-	//std::string videoname = "V35";	int NumDivLines = 4; // 4
+	//std::string videoname = "V25-2016-11-10-420x240-25";	int nDL = 5;
+	///std::string videoname = "V4";	int nDL = 5; // 5 lines
+	///std::string videoname = "V6";	int nDL = 4; // 4 lines
+	///std::string videoname = "V30";	int nDL = 4; // 4 lines
+	///std::string videoname = "V31";	int nDL = 4; // 4 lines
+	///std::string videoname = "V32";	int nDL = 6; // 6 lines
+	//std::string videoname = "V33";	int nDL = 2; // 2
+	//std::string videoname = "V34";	int nDL = 3; // 3
+	//std::string videoname = "V35";	int nDL = 4; // 4
 
 	// TESTING ENTROPY
-	//cv::String videoname = "V01"; int NumDivLines = 4;
-	//std::string videoname = "V02"; int NumDivLines = 5;
-	//std::string videoname = "V02-R"; int NumDivLines = 5;
-	//std::string videoname = "V5"; int NumDivLines = 5;
-	//std::string videoname = "V06"; int NumDivLines = 5;
+	//cv::String videoname = "V01"; int nDL = 4;
+	//std::string videoname = "V02"; int nDL = 5;
+	//std::string videoname = "V02-R"; int nDL = 5;
+	//std::string videoname = "V5"; int nDL = 5;
+	//std::string videoname = "V06"; int nDL = 5;
 	//std::string videoname = "V09";
 	//std::string videoname = "V12";
-	//std::string videoname = "V14"; int NumDivLines = 5;
-	//std::string videoname = "V14-R"; int NumDivLines = 5;
-	//std::string videoname = "V14-2018"; int NumDivLines = 5;
+	//std::string videoname = "V14"; int nDL = 5;
+	//std::string videoname = "V14-R"; int nDL = 5;
+	//std::string videoname = "V14-2018"; int nDL = 5;
 	//std::string videoname = "V15";
-	//std::string videoname = "V25-2016-11-10-420x240-25";	int NumDivLines = 5;
+	//std::string videoname = "V25-2016-11-10-420x240-25";	int nDL = 5;
 	//std::string videoname = "V30";
-	//std::string videoname = "V31"; int NumDivLines = 4;
+	//std::string videoname = "V31"; int nDL = 4;
 	//std::string videoname = "V32";
-	//std::string videoname = "V32-2"; int NumDivLines = 6;
+	//std::string videoname = "V32-2"; int nDL = 6;
 	//std::string videoname = "V33";
 	//std::string videoname = "V34";
-	//std::string videoname = "V35"; int NumDivLines = 5;
-	//std::string videoname = "V39"; int NumDivLines = 5;
-	//std::string videoname = "V39-R"; int NumDivLines = 5;
-	//std::string videoname = "V55"; int NumDivLines = 4;
-	//std::string videoname = "V74-L"; int NumDivLines = 3;
-	//std::string videoname = "V74-R"; int NumDivLines = 3;
+	//std::string videoname = "V35"; int nDL = 5;
+	//std::string videoname = "V39"; int nDL = 5;
+	//std::string videoname = "V39-R"; int nDL = 5;
+	//std::string videoname = "V55"; int nDL = 4;
+	//std::string videoname = "V74-L"; int nDL = 3;
+	//std::string videoname = "V74-R"; int nDL = 3;
 
 	/// TESTING OCCLUSION
-	//cv::String videoname = "V1"; int NumDivLines = 5;	// OK
-	//cv::String videoname = "V2"; int NumDivLines = 5;	// OK
-	//cv::String videoname = "V3"; int NumDivLines = 5;	// OK
-	//cv::String videoname = "V4"; int NumDivLines = 5;	// OK
-	//cv::String videoname = "V5"; int NumDivLines = 5;	// OK
-	//cv::String videoname = "V6"; int NumDivLines = 4;	// OK
-	//cv::String videoname = "V7"; int NumDivLines = 4;	// OK
-	//cv::String videoname = "V8"; int NumDivLines = 4;
+	//cv::String videoname = "V1"; int nDL = 5;	// OK
+	//cv::String videoname = "V2"; int nDL = 5;	// OK
+	//cv::String videoname = "V3"; int nDL = 5;	// OK
+	//cv::String videoname = "V4"; int nDL = 5;	// OK
+	//cv::String videoname = "V5"; int nDL = 5;	// OK
+	//cv::String videoname = "V6"; int nDL = 4;	// OK
+	//cv::String videoname = "V7"; int nDL = 4;	// OK
+	//cv::String videoname = "V8"; int nDL = 4;
 
 	//cv::String videoname = "20161031_123041-25f";	// 5 lines
 
 	/// SYSTEM INIT -----------------------------------------------------------------------------------
+	std::string videofile = uigetfile(L"Video File (mp4) \0*.MP4*\0");
+	auto fpart = sdcv::fs_fileparts(videofile);
+	std::string videoname = std::get<1>(fpart);
+
+	int nDL = 0;
+	if (videofile.length()) {
+		std::cout << "nDL: ";
+		std::cin >> nDL;
+	}
+
+	// Filesystem
 	if (!std::experimental::filesystem::exists(std::string("DATA/")))
 		std::experimental::filesystem::create_directories(std::string("DATA/" + videoname + "/"));
 
@@ -156,63 +214,52 @@ int main(int argc, const char** argv)
 		std::experimental::filesystem::remove_all(std::string("DATA/" + videoname + "/TEST"));
 	std::experimental::filesystem::create_directory(std::string("DATA/" + videoname + "/TEST"));
 
-
 	cv::String projdir = "DATA/" + videoname + "/";
 
-	cv::VideoCapture video(videoname + ".mp4");
+	// Video Camera/File
+	cv::VideoCapture video(videofile);
 	double fps = video.get(cv::CAP_PROP_FPS);				//
 	double videoW = video.get(cv::CAP_PROP_FRAME_WIDTH);	//
 	double videoH = video.get(cv::CAP_PROP_FRAME_HEIGHT);	//
 	int codec = (int)video.get(cv::CAP_PROP_FOURCC);		// Get Codec Type- Int form
-	
-	
-	/* ROI  */
+
+	/// ROI ------------------------------------------------------------------------------
 	sdcv::ROI roi(videoname);
-	// 1. Definir ROI en el orden:
-	// 1.1. Vertice izquierdo inferior
-	// 1.2. Vertice derecho inferior
-	// 1.3. Vertice derecho superior
-	// 1.4. Vertice izquierdo superior
-	// 1.5. Vertice izquierdo inferior
-	// 2. Lineas de división
-	// 3. Linea de deteccion
-	// 4. Linea de fin de ROI
-	// 5. Lineas de classificación en el orden:
-	// 5.1 Linea superior
-	// 5.2 Linea inferior
-	// Add a Height/10 extra space for display current ROI definition name {vertex, line detection, ...}
-	roi.create(videoname + ".mp4", NumDivLines, 2, true);
+	roi.setup(videofile, nDL, 2, true);
 
-	// DETECTOR ---------------------------------------------------------------------------------------
-	sdcv::occlusionType occtype = sdcv::OCC_NORM_AREA;			// Algoritmo de oclusion
-	sdcv::Detector detector(100, 100000, occtype, true, true);	// Configura clase
+	/// DETECTOR -------------------------------------------------------------------------
+	sdcv::occlusionType occtype = sdcv::OCC_DEF_CONTOUR;			// Occlusion Handling Type
+	sdcv::Detector detector(100, 100000, occtype, true, true);	// Class Constructor
 	detector.setROI(roi);
-	detector.setOclussion(true);								// Habilita algoritmo de oclusion
-	detector.setShadowRemoval(false);							// Habilita deteccion de sombras
+	detector.setOclussion(true);								// Enable Occlusion Handling
+	detector.setShadowRemoval(false);							// Enable Shadow Removal
+	cv::Mat fstframe, fstmask;
+	video.read(fstframe);
+	detector.apply(fstframe, fstmask);
 
-	// CLASSIFIER -------------------------------------------------------------------------------------
-	sdcv::Classifier classifier(4, std::vector<double>({ 0.12, 1.2, 100.0, 0.0 }), std::vector<std::string>({ "S", "M", "G" , "FP" }));
+	/// CLASSIFIER -----------------------------------------------------------------------
+	sdcv::Classifier classifier(4,
+								std::vector<double>({ 0.12, 1.2, 100.0, 0.0 }),
+								std::vector<std::string>({ "S", "M", "G" , "FP" }));
 
-	// TRACKER ----------------------------------------------------------------------------------------
+	/// TRACKER --------------------------------------------------------------------------
 	sdcv::Tracker tracker(8, 12, fps, roi, &classifier);
 
+	/// OUTPUT FILES ---------------------------------------------------------------------
 	std::ofstream stafile(projdir + "statistics.csv");
 	stafile << "Frame,idAlg,ID,DetectedCentroidX,DetectedCentroidY,EstimatedCentroidX,EstimatedCentroidY,Area,Width,Heigth,Velocity,RelAreaWH,RegionID,Occlusion,ObjId" << std::endl;
 	std::ofstream timefile(projdir + "time.csv");
 	timefile << "Total,Detection,Tracking,Drawing" << std::endl;
 	timefile << 1.0 / fps << std::endl;
 
-
-	// Video Writer --------------------------------------
 	cv::VideoWriter wrvideo(projdir + "video_out.mp4",
-		cv::VideoWriter::fourcc('H', '2', '6', '4'),
-		fps,
-		cv::Size((int)videoW * 2,
-		(int)videoH));
+							cv::VideoWriter::fourcc('H', '2', '6', '4'),
+							fps,
+							cv::Size((int)videoW * 2,
+							(int)videoH));
+	if ( !wrvideo.isOpened() ) std::cout << "Fail to open video writer with codec: " << codec << std::endl;
 
-	if (!wrvideo.isOpened()) std::cout << "Fail to open video writer with codec: " << codec << std::endl;
-
-	/// SYSTEM RUN  -----------------------------------------------------------------------------------
+	/// SYSTEM RUN  ----------------------------------------------------------------------
 	cv::destroyAllWindows();
 	cv::namedWindow("Track", cv::WINDOW_KEEPRATIO);
 	cv::namedWindow("Mask", cv::WINDOW_KEEPRATIO);
@@ -277,18 +324,19 @@ int main(int argc, const char** argv)
 		//cv::imwrite("DATA/RAW/" + std::to_string(NbFrame) + ".bmp", MaskRGB);
 
 		key = cv::waitKey(30);
-		if (key == sdcv::VK_SPACE) cv::waitKey();
-		else if (key == sdcv::VK_ESC) break;
+		if (key == KEY_SPACE) cv::waitKey();
+		else if (key == KEY_ESC) break;
 		else if (key == KEY_0) {
 			video.set(cv::CAP_PROP_POS_FRAMES, 0);
 			tracker.clear();
 		}
 	}
-	wrvideo.release();
 	
+	// Stop the system execution
 	cv::waitKey();
 	cv::destroyAllWindows();
-	
+	wrvideo.release();
+
 	return 0;
 }
 
