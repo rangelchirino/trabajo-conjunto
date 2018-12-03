@@ -15,7 +15,7 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
-#include <sdcv\munkres.h>
+#include "munkres.hpp"
 
 unsigned int minsize(cv::Mat_<int> &m) {
     return (m.rows < m.cols) ? m.rows : m.cols;
@@ -51,34 +51,34 @@ void replace_infinites(cv::Mat_<int> &matrix) {
     //  assert( rows > 0 && columns > 0 );
     if(rows==0 || columns==0)
         return;
-    double max = matrix(0, 0);
+    int maxitem = matrix(0, 0);
     const auto infinity = std::numeric_limits<int>::infinity();
 	
     // Find the greatest value in the matrix that isn't infinity.
     for ( unsigned int row = 0 ; row < rows ; row++ ) {
         for ( unsigned int col = 0 ; col < columns ; col++ ) {
             if ( matrix(row, col) != infinity ) {
-                if ( max == infinity ) {
-                    max = matrix(row, col);
+                if (maxitem == infinity ) {
+					maxitem = matrix(row, col);
                 } else {
-                    max = std::max<int>(max, matrix(row, col));
+					maxitem = (int)std::max<int>(maxitem, matrix(row, col));
                 }
             }
         }
     }
     
     // a value higher than the maximum value present in the matrix.
-    if ( max == infinity ) {
+    if (maxitem == infinity ) {
         // This case only occurs when all values are infinite.
-        max = 0;
+		maxitem = 0;
     } else {
-        max++;
+		maxitem++;
     }
     
     for ( unsigned int row = 0 ; row < rows ; row++ ) {
         for ( unsigned int col = 0 ; col < columns ; col++ ) {
             if ( matrix(row, col) == infinity ) {
-                matrix(row, col) = max;
+                matrix(row, col) = maxitem;
             }
         }
     }
@@ -92,23 +92,21 @@ void minimize_along_direction(cv::Mat_<int> &matrix, bool over_columns) {
     // Look for a minimum value to subtract from all values along
     // the "outer" direction.
     for ( unsigned int i = 0 ; i < outer_size ; i++ ) {
-        double min = over_columns ? matrix(0, i) : matrix(i, 0);
+        int minitem = over_columns ? matrix(0, i) : matrix(i, 0);
         
         // As long as the current minimum is greater than zero,
         // keep looking for the minimum.
         // Start at one because we already have the 0th value in min.
-        for ( unsigned int j = 1 ; j < inner_size && min > 0 ; j++ ) {
-            min = std::min<int>(
-                                min,
-                                over_columns ? matrix(j, i) : matrix(i, j));
+        for ( unsigned int j = 1 ; j < inner_size && minitem > 0 ; j++ ) {
+			minitem = (int)std::min<int>(minitem, over_columns ? matrix(j, i) : matrix(i, j));
         }
         
-        if ( min > 0 ) {
+        if (minitem > 0 ) {
             for ( unsigned int j = 0 ; j < inner_size ; j++ ) {
                 if ( over_columns ) {
-                    matrix(j, i) -= min;
+                    matrix(j, i) -= minitem;
                 } else {
-                    matrix(i, j) -= min;
+                    matrix(i, j) -= minitem;
                 }
             }
         }
@@ -226,7 +224,7 @@ int Munkres::step3(void) {
         return 5;
     }
     
-    for ( unsigned int ncol = 0 ; ncol < matrix.cols ; ncol++ ) {
+    for (int ncol = 0 ; ncol < matrix.cols ; ncol++ ) {
         if ( mask_matrix(saverow,ncol) == STAR ) {
             row_mask[saverow] = true; //cover this row and
             col_mask[ncol] = false; // uncover the column containing the starred zero
@@ -315,8 +313,8 @@ int Munkres::step4(void) {
     }
     
     // 4. Erase all primes, uncover all columns and rows,
-    for ( unsigned int row = 0 ; row < mask_matrix.rows ; row++ ) {
-        for ( unsigned int col = 0 ; col < mask_matrix.cols ; col++ ) {
+    for (int row = 0 ; row < mask_matrix.rows ; row++ ) {
+        for (int col = 0 ; col < mask_matrix.cols ; col++ ) {
             if ( mask_matrix(row,col) == PRIME ) {
                 mask_matrix(row,col) = NORMAL;
             }
@@ -346,7 +344,7 @@ int Munkres::step5(void) {
      3. Subtract h from all uncovered columns
      4. Return to Step 3, without altering stars, primes, or covers.
      */
-    double h = 0;
+    int h = 0;
     for ( unsigned int row = 0 ; row < rows ; row++ ) {
         if ( !row_mask[row] ) {
             for ( unsigned int col = 0 ; col < columns ; col++ ) {

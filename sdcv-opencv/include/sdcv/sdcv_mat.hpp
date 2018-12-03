@@ -22,7 +22,7 @@
 	#include <functional>
 	#include <algorithm>
 	#include <vector>
-	#include <opencv2/opencv.hpp>
+	#include <opencv2\opencv.hpp>
 	#include <sdcv\Track.hpp>
 
 	/*********************************************************/
@@ -53,23 +53,33 @@
 	/*                       C L A S S                       */
 	/*********************************************************/
 	namespace sdcv {
+
+		typedef enum {
+			TOP_DOWN = 0,
+			BOTTOM_UP,
+			LEFT_2_RIGHT,
+			RIGHT_2_LEFT
+
+		} eOrientationLine;
+
+
 		/*!
 		 * @name	cv_remove_if
 		 * @brief	Remove columns/rows if lamda is equals to parameter polarity.
 		 */
-		void cv_remove_if(const cv::Mat &src, cv::Mat &dst, std::function<bool(cv::Mat src)> lamda, bool RowOrColumn = true, bool polarity = true);
+		void cv_remove_if(const cv::Mat &src, cv::Mat &dst, std::function<bool(cv::Mat src)> lamda, bool row_column = true, bool polarity = true);
 		
 		/*!
 		 * @name	cv_remove
 		 * @brief	Remove columns/rows given a vector of indexes from the src array
 		 */
-		void cv_remove(cv::InputArray src, cv::OutputArray dst, std::vector<int> ridx, bool RowOrColumn = true);
+		void cv_remove(cv::InputArray src, cv::OutputArray dst, std::vector<int> ridx, bool row_column = true);
 		
 		/*!
 		 * @name	cv_copy
 		 * @brief	Copy columns/rows given a vector of indexes from the src array
 		 */
-		void cv_copy(cv::InputArray src, cv::OutputArray dst, std::vector<int> idx, bool RowOrColumn = true);
+		void cv_copy(cv::InputArray src, cv::OutputArray dst, std::vector<int> idx, bool row_column = true);
 
 		/*!
 		* @name	norm
@@ -89,6 +99,8 @@
 		* @brief	Normalize data for svm classification
 		*/
 		double pointLineTest(cv::Point begin, cv::Point end, cv::Point2d pt, bool retpoint = false);
+
+
 		/*******************************************************************************************************
 		 * V 1.2
 		 *******************************************************************************************************/
@@ -97,17 +109,14 @@
 		* @brief	Compute the distance between a point and a line with slope 'slope' and intersection 'b'.
 		*			Additional can specify the direction, that is top-down and bottom-up.
 		*/
-		typedef enum {
-			TOP_DOWN = 0,
-			BOTTOM_UP,
-			LEFT_2_RIGHT,
-			RIGHT_2_LEFT
+		template<class _Tp>
+		double distanceToLine(cv::Point_<_Tp> pt, double m, double b, sdcv::eOrientationLine orientation) {
+			double scale = 1.0;
 
-		} eOrientationLine;
+			if (orientation == BOTTOM_UP || orientation == RIGHT_2_LEFT)	scale = -1.0;
 
-		double distanceToLine(cv::Point pt, double slope, double b, sdcv::eOrientationLine orientation = TOP_DOWN);
-		double distanceToLine(cv::Point2f pt, double slope, double b, sdcv::eOrientationLine orientation = TOP_DOWN);
-		double distanceToLine(cv::Point2d pt, double slope, double b, sdcv::eOrientationLine orientation = TOP_DOWN);
+			return ((double)((double)pt.x*m + b - (double)pt.y))*scale;
+		}
 
 		/*******************************************************************************************************
 		* V 1.3
@@ -116,9 +125,12 @@
 		* @name		euclidean
 		* @brief	Computes euclidean distance between two points
 		*/
-		double euclidean(cv::Point pt1, cv::Point pt2);
-		double euclidean(cv::Point2f pt1, cv::Point2f pt2);
-		double euclidean(cv::Point2d pt1, cv::Point2d pt2);
+		template<class _Tp>
+		double euclidean(cv::Point_<_Tp> p1, cv::Point_<_Tp> p2) {
+			cv::Point_<_Tp> pdiff = p2 - p1;
+
+			return std::sqrt((double)(pdiff.x*pdiff.x) + (double)(pdiff.y*pdiff.y));
+		}
 	}
 	
 #endif /* SDCV_MAT_HPP */

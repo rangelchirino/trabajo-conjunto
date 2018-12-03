@@ -149,55 +149,6 @@ namespace sdcv {
 
 		return retpoint ? distance2line : (double)(distance2line > 0);
 	}
-
-	
-	double distanceToLine(cv::Point pt, double slope, double b, eOrientationLine orientation) {
-		double scale;
-		if (orientation == TOP_DOWN || orientation == LEFT_2_RIGHT)
-			scale = 1.0;
-		else if (orientation == BOTTOM_UP || orientation == RIGHT_2_LEFT)
-			scale = -1.0;
-
-		return ((double)((double)pt.x*slope + b - (double)pt.y))*scale;
-	}
-
-	double distanceToLine(cv::Point2f pt, double slope, double b, sdcv::eOrientationLine orientation) {
-		double scale;
-		if (orientation == TOP_DOWN || orientation == LEFT_2_RIGHT)
-			scale = 1.0;
-		else if (orientation == BOTTOM_UP || orientation == RIGHT_2_LEFT)
-			scale = -1.0;
-
-		return ((double)((double)pt.x*slope + b - (double)pt.y))*scale;
-	}
-
-	double distanceToLine(cv::Point2d pt, double slope, double b, sdcv::eOrientationLine orientation) {
-		double scale;
-		if (orientation == TOP_DOWN || orientation == LEFT_2_RIGHT)
-			scale = 1.0;
-		else if (orientation == BOTTOM_UP || orientation == RIGHT_2_LEFT)
-			scale = -1.0;
-
-		return ((double)((double)pt.x*slope + b - (double)pt.y))*scale;
-	}
-
-	double euclidean(cv::Point a, cv::Point b) {
-		cv::Point2d diff = b - a;
-
-		return std::sqrt(diff.x*diff.x + diff.y*diff.y);
-	}
-
-	double euclidean(cv::Point2f a, cv::Point2f b) {
-		cv::Point2d diff = b - a;
-
-		return std::sqrt(diff.x*diff.x + diff.y*diff.y);
-	}
-
-	double euclidean(cv::Point2d a, cv::Point2d b) {
-		cv::Point2d diff = b - a;
-
-		return std::sqrt(diff.x*diff.x + diff.y*diff.y);
-	}
 }
 
 /*! ************** End of file ----------------- CINVESTAV GDL */

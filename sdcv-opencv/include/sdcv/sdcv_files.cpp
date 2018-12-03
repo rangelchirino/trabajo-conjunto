@@ -187,4 +187,96 @@ namespace sdcv {
 
 		return values;
 	}
+
+	bool FileDialog::exist(std::string filename)
+	{
+		return fs_exist(filename);
+	}
+
+	void FileDialog::csvread(const std::string filename, cv::OutputArray dst, csvparam_t param)
+	{
+		cv::Mat _dst = fs_read(filename, ',', param.RowOffset, param.ColOffset, param.RowLast, param.ColLast);
+		_dst.copyTo(dst);
+	}
+
+	void FileDialog::csvwrite(const std::string filename, cv::InputArray src, int mode, std::string header)
+	{
+		fs_write(filename, src.getMat(), mode, header);
+	}
+
+	/*!
+		* @name	getOpenFilename
+		* @brief	Open a file dialog window to get a filename to open
+		*/
+	std::string FileDialog::getOpenFilename(wchar_t filter[], HWND hWnd) {
+		std::string filepath;
+
+		// OPENFILENAME struct initialization
+		TCHAR fbuffer[200];
+		OPENFILENAME ofn;
+		ZeroMemory(&ofn, sizeof(ofn));
+		ofn.lStructSize = sizeof(ofn);
+		ofn.hwndOwner = hWnd;
+		ofn.lpstrFile = fbuffer;
+		fbuffer[0] = L'\0';
+		ofn.nMaxFile = sizeof(fbuffer);
+		ofn.lpstrFilter = filter;
+		ofn.nFilterIndex = 1;
+		ofn.lpstrFileTitle = NULL;
+		ofn.nMaxFileTitle = 0;
+		ofn.lpstrInitialDir = NULL;
+		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+
+		if (GetOpenFileName(&ofn) == TRUE) {
+			int i = 0;
+			while (fbuffer[i] != L'\0') {
+				filepath += (char)fbuffer[i++];
+			}
+		}
+		else {
+			std::cout << "Open filename error" << std::endl;
+			exit(-1);
+		}
+
+		return filepath;
+	}
+
+	/*!
+	 * @name	getSaveFilename
+	 * @brief	Open a file dialog window to get a filename to save
+	 */
+	std::string FileDialog::getSaveFilename(wchar_t filter[], HWND hWnd) {
+		std::string filepath;
+
+		// OPENFILENAME struct initialization
+		TCHAR fbuffer[200];
+		OPENFILENAME ofn;
+		ZeroMemory(&ofn, sizeof(ofn));
+		ofn.lStructSize = sizeof(ofn);
+		ofn.hwndOwner = hWnd;
+		ofn.lpstrFile = fbuffer;
+		fbuffer[0] = L'\0';
+		ofn.nMaxFile = sizeof(fbuffer);
+		ofn.lpstrFilter = filter;
+		ofn.nFilterIndex = 1;
+		ofn.lpstrFileTitle = NULL;
+		ofn.nMaxFileTitle = 0;
+		ofn.lpstrInitialDir = NULL;
+		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR | OFN_HIDEREADONLY;
+
+
+		if (GetSaveFileName(&ofn) == TRUE) {
+			int i = 0;
+			while (fbuffer[i] != L'\0') {
+				filepath += (char)fbuffer[i++];
+			}
+		}
+		else {
+			std::cout << "Save filename error" << std::endl;
+			exit(-1);
+		}
+
+		return filepath;
+	}
 }

@@ -1,4 +1,4 @@
-#include "Blob.h"
+#include "Blob.hpp"
 
 
 /*!
@@ -11,45 +11,96 @@ namespace sdcv {
 		this->contour = contour;
 
 		this->id = id;
-		this->creatorId = -1;
+		parentId = -1;
 
 		cv::Moments m = moments(contour);
-		this->centroid = cv::Point2d((float)(m.m10/(double)m.m00), (float)(m.m01/(double)m.m00));
-		
+		centroid = cv::Point2d((float)(m.m10/(double)m.m00), (float)(m.m01/(double)m.m00));
+		eccentricity = (m.m20 + m.m02 + std::sqrt(((m.m20 - m.m02)*(m.m20 - m.m02)) + 4 * m.m11*m.m11)) / (double)(m.m20 + m.m02 - std::sqrt(((m.m20 - m.m02)*(m.m20 - m.m02)) + 4 * m.m11*m.m11));
+
 		if( area < 0 ) this->area = (int)cv::contourArea(contour);
 		else this->area = area;
 		
-		this->bbox = cv::boundingRect(contour);
-		this->normArea = 0.0;
+		bbox = cv::boundingRect(contour);
+		normArea = 0.0;
 
-		this->lanePosition = -1;
+		lanePosition = -1;
 
-		this->occluded = false;
+		occluded = false;
 	}
 
 	// Get methods
-	cv::Point2f Blob::getCentroid( void ) { return this->centroid; }
-	int Blob::getArea(void) { return this->area; }
-	double Blob::getNormArea(void) { return normArea; }
-	cv::Rect Blob::getBBox(void) { return this->bbox; }
-	std::vector<cv::Point> Blob::getContour(void) { return this->contour; }
-	bool Blob::getOccluded(void) { return(this->occluded); }
-	int Blob::getParentId(void) { return this->creatorId; }
+	cv::Point2f Blob::getCentroid( void )
+	{
+		return this->centroid;
+	}
+	
+	int Blob::getArea(void)
+	{
+		return area;
+	}
+	
+	double Blob::getNormArea(void)
+	{
+		return normArea;
+	}
+	
+	cv::Rect Blob::getBBox(void)
+	{
+		return bbox;
+	}
+	
+	std::vector<cv::Point> Blob::getContour(void)
+	{
+		return contour;
+	}
+	
+	bool Blob::getOccluded(void)
+	{
+		return(occluded);
+	}
+	
+	int Blob::getParentId(void)
+	{
+		return parentId;
+	}
+
+	double Blob::getEccentricity(void)
+	{
+		return eccentricity;
+	}
 
 	// Set methods
 	void Blob::setBlob(std::vector< cv::Point > contour) {
-		cv::Moments m = moments(contour);
-		this->centroid = cv::Point2f((float)(m.m10/(double)m.m00), (float)(m.m01/(double)m.m00));
-		this->area = (int)cv::contourArea(contour);
-		this->bbox = cv::boundingRect(contour);
 		this->contour = contour;
-		this->occluded = false;
+
+		cv::Moments m = moments(contour);
+		centroid = cv::Point2f((float)(m.m10/(double)m.m00), (float)(m.m01/(double)m.m00));
+		eccentricity = (m.m20 + m.m02 + std::sqrt(((m.m20 - m.m02)*(m.m20 - m.m02)) + 4 * m.m11*m.m11)) / (double)(m.m20 + m.m02 - std::sqrt(((m.m20 - m.m02)*(m.m20 - m.m02)) + 4 * m.m11*m.m11));
+
+		area = (int)cv::contourArea(contour);
+		bbox = cv::boundingRect(contour);
+		occluded = false;
 	}
 
-	void Blob::setNormArea(double normArea) { this->normArea = normArea; }
-	void Blob::setLanePosition(int position) { this->lanePosition = position; }
-	void Blob::setOcclusion(bool value) { this->occluded = value; }
-	void Blob::setParentId(int parentId) { this->creatorId = parentId;  }
+	void Blob::setNormArea(double normArea)
+	{
+		normArea = normArea;
+	}
+	
+	void Blob::setLanePosition(int position)
+	{
+		lanePosition = position;
+	}
+
+	void Blob::setOcclusion(bool value)
+	{
+		occluded = value;
+	}
+
+	void Blob::setParentId(int id)
+	{
+		parentId = id;
+	}
 
 	// Action methods
 	void Blob::print( std::ofstream &file  ) {

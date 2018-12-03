@@ -24,8 +24,9 @@
 	#include <functional>
 	#include <algorithm>
 	#include <vector>
-	#include <experimental/filesystem>
-	#include <opencv2/opencv.hpp>
+	#include <experimental\filesystem>
+	#include <Windows.h>
+	#include <opencv2\opencv.hpp>
 	
 	/*********************************************************/
 	/*                     D E F I N E S                     */
@@ -54,7 +55,29 @@
 	/*********************************************************/
 	/*                       C L A S S                       */
 	/*********************************************************/
-	namespace sdcv{
+	namespace sdcv {
+		const int SDCV_FS_WRITE = 0;
+		const int SDCV_FS_APPEND = 1;
+
+
+
+		typedef struct {
+			int RowOffset;
+			int ColOffset;
+			int RowLast;
+			int ColLast;
+
+			void operator()(void)
+			{
+				RowOffset = -1;
+				ColOffset = -1;
+				RowLast = 0;
+				ColLast = 0;
+			}
+
+		} csvparam_t;
+
+
 		template <typename T, typename U> 
 		T find_last(T first, T last, U value2find);
 
@@ -68,8 +91,6 @@
 		 * @name	csvwrite
 		 * @brief	Write a cv::Mat into a xsv file
 		 */
-		const int SDCV_FS_WRITE = 0;
-		const int SDCV_FS_APPEND = 1;
 		void fs_write(const std::string filename, char charSeparated, cv::Mat data);
 		void fs_write(const std::string filename, cv::Mat data, int flag = 0, std::string header = "");
 		
@@ -86,6 +107,23 @@
 		void fs_split_path(std::string filename, std::vector<std::string> &splitted);
 		std::tuple<std::string, std::string, std::string> fs_fileparts(std::string filename);
 
+
+		class FileDialog {	
+			public:
+				inline static bool exist(std::string filename);
+				inline static void csvread(const std::string filename, cv::OutputArray dst, csvparam_t param);
+				inline static void csvwrite(const std::string filename, cv::InputArray src, int mode = SDCV_FS_WRITE, std::string header = "");
+
+				
+				static std::string getOpenFilename(wchar_t filter[] = (wchar_t *)L"All files\0*.*\0", HWND hWnd = NULL);
+				static std::string getSaveFilename(wchar_t filter[] = (wchar_t *)L"All files\0*.*\0", HWND hWnd = NULL);
+
+			private:
+
+		};
+
+		
+		
 	}
 	
 #endif /* SDCV_FILES_HPP */

@@ -18,7 +18,7 @@
 	#include <sdcv/sdcv_mat.hpp>
 	#include <sdcv/sdcv_files.hpp>
 	#include <opencv2/opencv.hpp>
-	#include <sdcv\ROI.h>
+	#include <sdcv\ROI.hpp>
 	
 	/*********************************************************/
 	/*                     D E F I N E S                     */

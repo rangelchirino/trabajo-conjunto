@@ -21,8 +21,8 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <sdcv\Blob.h>
-#include <sdcv\ROI.h>
+#include <sdcv\Blob.hpp>
+#include <sdcv\ROI.hpp>
 #include <sdcv\Classifier.hpp>
 
 
@@ -39,14 +39,6 @@ namespace sdcv {
 	class Track {
 	public:
 		Track();
-
-		/*!
-		 * @name	Track
-		 * @brief	Track class constructor
-		 *
-		 * @param newBlob:	sdcv::Blob	new blob to track
-		 */
-		Track(sdcv::Blob newBlob);
 		
 		/*!
 		* @name	Track
@@ -54,7 +46,7 @@ namespace sdcv {
 		*
 		* @param newBlob:	sdcv::Blob	new blob to track
 		*/
-		Track(sdcv::Blob newBlob, int NbFrame);
+		Track(sdcv::Blob newBlob, int NbFrame = 1);
 
 		// Action method
 		void print(void);						// std::cout
@@ -130,7 +122,14 @@ namespace sdcv {
 		//!< @param	isClassified: The object has already been classified
 		bool isClassified;
 
+		//!< @param	ObjectID: ID of the 
 		int ObjectID;
+
+		//!< @param	ObjectID: ID of the 
+		bool isDone;
+
+		//!< @param	contour: Blob contour
+		std::vector<cv::Point> contour;
 
 	private:
 		void KalmanFilterInit(void);

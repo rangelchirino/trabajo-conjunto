@@ -1,7 +1,7 @@
 /* ---------------------------*/
 /*       Library Include       */
 /* ---------------------------*/
-#include "BlobList.h"
+#include "BlobList.hpp"
 
 
 /*!
@@ -14,12 +14,16 @@ namespace sdcv {
 	 * @brief	Used for creating a blob list.
 	 */
 	// Constructor
-	BlobList::BlobList(){}
+	BlobList::BlobList()
+	{
 
-	BlobList::BlobList(std::vector<sdcv::Blob> blobs) {
+	}
+
+	BlobList::BlobList(std::vector<sdcv::Blob> blobs) 
+	{
 		this->len = 0;
 			
-		for(std::vector<Blob>::iterator blob = blobs.begin(); blob != blobs.end(); ++blob) {
+		for(std::vector<sdcv::Blob>::iterator blob = blobs.begin(); blob != blobs.end(); ++blob) {
 			areas.push_back( blob->getArea() );
 			centroids.push_back( blob->getCentroid() );
 			bboxes.push_back( blob->getBBox() );

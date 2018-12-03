@@ -20,8 +20,8 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <sdcv\Blob.h>
-#include <sdcv\ROI.h>
+#include <sdcv\Blob.hpp>
+#include <sdcv\ROI.hpp>
 
 
 /*!
@@ -61,4 +61,6 @@ namespace sdcv {
 	};
 }
 
-#endif
+#endif /* CLASSIFIER_HPP */
+
+/*! ************** End of file ----------------- CINVESTAV GDL */

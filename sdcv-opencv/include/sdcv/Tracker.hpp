@@ -28,12 +28,12 @@
 #include <vector>
 #include <numeric>
 
-#include <sdcv\BlobList.h>
-#include <sdcv\ROI.h>
+#include <sdcv\BlobList.hpp>
+#include <sdcv\ROI.hpp>
 #include <sdcv\Track.hpp>
 #include <sdcv\Classifier.hpp>
-#include <sdcv\munkres.h>
-#include <sdcv\Drawing.h>
+#include <sdcv\munkres.hpp>
+#include <sdcv\Drawing.hpp>
 #include <sdcv\sdcv_files.hpp>
 #include <sdcv\sdcv_mat.hpp>
 
@@ -70,6 +70,16 @@ namespace sdcv {
 		int getNbOfOcclusion(int offset);
 		
 		/*!
+		 * @name	setID
+		 * @brief	Set the ID of a track to extract its rgb space
+		 * @param	id: ID to track
+		 */
+		void setID(int id);
+		void setConvex(bool cvxen);
+		void tensorTrack(cv::Mat frame, std::string homedir);
+
+
+		/*!
 		 * @name	setMinVisibleCount
 		 * @brief	
 		 * @param minVisibleCount:	
@@ -96,7 +106,7 @@ namespace sdcv {
 		 * @brief	
 		 * @param detectedBlobs:	std::vector<sdcv::Blob>
 		 */
-		void track(std::vector<sdcv::Blob> detectedBlobs);
+		void update(std::vector<sdcv::Blob> detectedBlobs);
 			
 		/*!
 		 * @name	run
@@ -125,13 +135,13 @@ namespace sdcv {
 		*
 		* @param file	File to write
 		*/
-		void writeTracks(std::ofstream &file);
+		void write(std::ofstream &file);
 
 		/*!
 		* @overload	writeTracks
 		* @brief	This function writes tracks in stdout
 		*/
-		void writeTracks(void);
+		void write(void);
 
 		/*!
 		 * @name	~Track.
@@ -140,6 +150,10 @@ namespace sdcv {
 		~Tracker();
 			
 	private:
+		bool convexflag;
+		int convexcount;
+		int convexID;
+
 		//!< Minimum visible frame count that a blob has to have to add as a track it.
 		int minVisibleCount;
 		
@@ -245,15 +259,15 @@ namespace sdcv {
 		* @brief	Update tracks.
 		* @param assignedBlobs:	std::vector<sdcv::Blob>	a vector of assigned blobs.
 		*/
-		void update(std::vector<sdcv::Blob> detectedBlobs, std::vector<cv::Point> assignments, std::vector<int> unassignedTracks);
+		void updateTracks(std::vector<sdcv::Blob> detectedBlobs, std::vector<cv::Point> assignments, std::vector<int> unassignedTracks);
 		
 		
 		/*!
-		 * @name	erease.
+		 * @name	remove.
 		 * @brief	Deletes tracks and increase the vehicle count according to its class.
 		 * @param classifier:	sdcv::Classifier 
 		 */
-		void erease(void);
+		void remove(void);
 		
 		
 	};
