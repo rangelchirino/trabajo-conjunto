@@ -2,26 +2,23 @@
 """
 Created on Wed Mar 27 21:16:54 2019
 
-@author: ferna
+@author: M.Sc. Fernando Hermosillo
 """
 
 import numpy as np
 import trpca
 
-A=np.random.rand(3,4,3)
-A[:,:,0]=[[1,2,3,4], [5,6,7,8], [9,10,11,12]]
-A[:,:,1]=[[13,14,15,16],[17,18,19,20],[21,22,23,24]]
-A[:,:,2]=[[25,26,27,28],[29,30,31,32],[33,34,35,36]]
-L,S,obj,err,itercount=trpca.trpca_tnn(A)
+# Create a sintetic 3rd-order tensor data
+L=np.ones((4,5,3))*5
+S=np.random.rand(4,5,3)
+X = L + S
 
+# Decompose the tensor into a low-rank and sparse tensor
+Lhat,Shat,obj,err,itercount=trpca.trpca_tnn(X)
 
-trpca.tprint(L)
-trpca.tprint(S)
-print('Error:', err)
-print('Iterations:', itercount)
-
-#L,S,obj,err,iterations=trpca_tnn(A,lambda_)
-
-#print('Error:', err, 'with', iterations, 'iterations')
-#tprint(L)
-#tprint(S)
+# Print out results
+print('Low-rank tensor was recovered in', itercount, 'iterations, with an error of', err)
+print('hat(L):')
+trpca.tprint(Lhat)
+print('hat(S):')
+trpca.tprint(Shat)
